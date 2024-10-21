@@ -67,14 +67,6 @@ abstract contract FeeHandler {
         }
     }
 
-    /// @notice Charges the minting fee in tokens
-    /// @param relativeTokenFee Fee in tokens
-    function _chargeRelativeTokenFee(uint256 relativeTokenFee) internal {
-        if (relativeTokenFee > 0) {
-            i_feeToken.safeTransferFrom(msg.sender, s_feeAddress, relativeTokenFee);
-        }
-    }
-
     /// @notice Charges the minting fee in ETH
     /// @param ethFee Fee in ETH
     function _chargeEthFee(uint256 ethFee) internal {
