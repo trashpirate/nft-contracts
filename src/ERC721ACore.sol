@@ -116,7 +116,7 @@ contract ERC721ACore is ERC721A, ERC2981, ERC721ABurnable, Ownable {
 
     /// @notice Mints NFT
     /// @param quantity number of NFTs to mint
-    function mint(uint256 quantity) external payable virtual validQuantity(quantity) {
+    function mint(uint256 quantity) public payable virtual validQuantity(quantity) {
         _safeMint(msg.sender, quantity);
     }
 
