@@ -114,12 +114,6 @@ contract ERC721ACore is ERC721A, ERC2981, ERC721ABurnable, Ownable {
                            EXTERNAL FUNCTIONS
     //////////////////////////////////////////////////////////////*/
 
-    /// @notice Mints NFT
-    /// @param quantity number of NFTs to mint
-    function mint(uint256 quantity) public payable virtual validQuantity(quantity) {
-        // _safeMint(msg.sender, quantity);
-    }
-
     /// @notice Sets batch limit - maximum number of nfts that can be minted at once (only owner)
     /// @param batchLimit Maximum number of nfts that can be minted at once
     function setBatchLimit(uint256 batchLimit) external onlyOwner {

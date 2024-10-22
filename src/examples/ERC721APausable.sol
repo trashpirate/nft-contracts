@@ -22,7 +22,7 @@ contract ERC721APausable is ERC721ACore, Pausable {
 
     /// @notice Mints NFT for a eth and a token fee
     /// @param quantity number of NFTs to mint
-    function mint(uint256 quantity) external payable override whenNotPaused validQuantity(quantity) {
+    function mint(uint256 quantity) external payable whenNotPaused validQuantity(quantity) {
         _safeMint(msg.sender, quantity);
     }
 

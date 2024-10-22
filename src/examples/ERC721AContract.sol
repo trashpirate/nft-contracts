@@ -54,7 +54,7 @@ contract ERC721AContract is ERC721ACore, Pausable, PseudoRandomized, FeeHandler 
 
     /// @notice Mints NFT for a eth and a token fee
     /// @param quantity number of NFTs to mint
-    function mint(uint256 quantity) external payable override whenNotPaused validQuantity(quantity) {
+    function mint(uint256 quantity) external payable whenNotPaused validQuantity(quantity) {
         _mintRandom(msg.sender, quantity);
 
         uint256 ethFee = getEthFee() * quantity;

@@ -28,7 +28,7 @@ contract ERC721AFeeHandler is ERC721ACore, FeeHandler {
 
     /// @notice Mints NFT for a eth and a token fee
     /// @param quantity number of NFTs to mint
-    function mint(uint256 quantity) external payable override validQuantity(quantity) {
+    function mint(uint256 quantity) external payable validQuantity(quantity) {
         _safeMint(msg.sender, quantity);
 
         uint256 ethFee = getEthFee() * quantity;

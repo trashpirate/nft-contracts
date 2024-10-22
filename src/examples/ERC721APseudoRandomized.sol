@@ -25,7 +25,7 @@ contract ERC721APseudoRandomized is ERC721ACore, PseudoRandomized {
 
     /// @notice Mints NFT for a eth and a token fee
     /// @param quantity number of NFTs to mint
-    function mint(uint256 quantity) external payable override validQuantity(quantity) {
+    function mint(uint256 quantity) external payable validQuantity(quantity) {
         _mintRandom(msg.sender, quantity);
     }
 
