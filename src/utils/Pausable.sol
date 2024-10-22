@@ -51,23 +51,23 @@ abstract contract Pausable {
     }
 
     /// @dev Throws if the contract is paused.
-    function _requirePaused() internal view virtual {
+    function _requirePaused() internal view {
         if (!s_paused) revert Pausable_ContractIsUnpaused();
     }
 
     /// @dev Throws if the contract is not paused.
-    function _requireNotPaused() internal view virtual {
+    function _requireNotPaused() internal view {
         if (s_paused) revert Pausable_ContractIsPaused();
     }
 
     /// @dev Pause contract
-    function _pause() internal virtual whenNotPaused {
+    function _pause() internal whenNotPaused {
         s_paused = true;
         emit Paused(msg.sender);
     }
 
     /// @dev Unpause contract
-    function _unpause() internal virtual whenPaused {
+    function _unpause() internal whenPaused {
         s_paused = false;
         emit Unpaused(msg.sender);
     }
