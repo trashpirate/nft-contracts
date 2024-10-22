@@ -9,18 +9,10 @@ import {ERC721ACore} from "src/ERC721ACore.sol";
 contract HelperConfig is Script {
     struct ConstructorArguments {
         ERC721ACore.CoreConfig coreConfig;
-        // string name;
-        // string symbol;
-        // string baseURI;
-        // string contractURI;
-        // address owner;
         address feeAddress;
         address tokenAddress;
         uint256 tokenFee;
         uint256 ethFee;
-        // uint256 maxSupply;
-        // uint256 maxWalletSize;
-        // uint256 batchLimit;
         bytes32 merkleRoot;
     }
 
