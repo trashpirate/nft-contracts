@@ -4,19 +4,23 @@ pragma solidity ^0.8.20;
 import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/console.sol";
 import {ERC20Mock} from "@openzeppelin/contracts/mocks/token/ERC20Mock.sol";
+import {ERC721ACore} from "src/ERC721ACore.sol";
 
 contract HelperConfig is Script {
     struct ConstructorArguments {
-        string name;
-        string symbol;
-        string baseURI;
-        string contractURI;
-        address owner;
+        ERC721ACore.CoreConfig coreConfig;
+        // string name;
+        // string symbol;
+        // string baseURI;
+        // string contractURI;
+        // address owner;
         address feeAddress;
         address tokenAddress;
         uint256 tokenFee;
         uint256 ethFee;
-        uint256 maxSupply;
+        // uint256 maxSupply;
+        // uint256 maxWalletSize;
+        // uint256 batchLimit;
         bytes32 merkleRoot;
     }
 
@@ -72,16 +76,21 @@ contract HelperConfig is Script {
     function getMainnetConfig() public view returns (NetworkConfig memory) {
         return NetworkConfig({
             args: ConstructorArguments({
-                name: NAME,
-                symbol: SYMBOL,
-                baseURI: BASE_URI,
-                contractURI: CONTRACT_URI,
-                owner: vm.envAddress("OWNER_ADDRESS"),
+                coreConfig: ERC721ACore.CoreConfig({
+                    name: NAME,
+                    symbol: SYMBOL,
+                    baseURI: BASE_URI,
+                    contractURI: CONTRACT_URI,
+                    owner: vm.envAddress("OWNER_ADDRESS"),
+                    maxSupply: MAX_SUPPLY,
+                    maxWalletSize: 10,
+                    batchLimit: 10,
+                    royaltyNumerator: 500 // 5%
+                }),
                 feeAddress: vm.envAddress("FEE_ADDRESS"),
                 tokenAddress: vm.envAddress("TOKEN_ADDRESS"),
                 ethFee: ETH_FEE,
                 tokenFee: TOKEN_FEE,
-                maxSupply: MAX_SUPPLY,
                 merkleRoot: MERKLE_ROOT
             })
         });
@@ -90,16 +99,21 @@ contract HelperConfig is Script {
     function getTestnetConfig() public view returns (NetworkConfig memory) {
         return NetworkConfig({
             args: ConstructorArguments({
-                name: NAME,
-                symbol: SYMBOL,
-                baseURI: BASE_URI,
-                contractURI: CONTRACT_URI,
-                owner: vm.envAddress("OWNER_ADDRESS"),
+                coreConfig: ERC721ACore.CoreConfig({
+                    name: NAME,
+                    symbol: SYMBOL,
+                    baseURI: BASE_URI,
+                    contractURI: CONTRACT_URI,
+                    owner: vm.envAddress("OWNER_ADDRESS"),
+                    maxSupply: MAX_SUPPLY,
+                    maxWalletSize: 10,
+                    batchLimit: 10,
+                    royaltyNumerator: 500 // 5%
+                }),
                 feeAddress: vm.envAddress("FEE_ADDRESS"),
                 tokenAddress: vm.envAddress("TOKEN_ADDRESS"),
                 ethFee: ETH_FEE,
                 tokenFee: TOKEN_FEE,
-                maxSupply: MAX_SUPPLY,
                 merkleRoot: MERKLE_ROOT
             })
         });
@@ -113,16 +127,21 @@ contract HelperConfig is Script {
 
         return NetworkConfig({
             args: ConstructorArguments({
-                name: NAME,
-                symbol: SYMBOL,
-                baseURI: BASE_URI,
-                contractURI: CONTRACT_URI,
-                owner: vm.envAddress("ANVIL_DEFAULT_ACCOUNT"),
+                coreConfig: ERC721ACore.CoreConfig({
+                    name: NAME,
+                    symbol: SYMBOL,
+                    baseURI: BASE_URI,
+                    contractURI: CONTRACT_URI,
+                    owner: vm.envAddress("ANVIL_DEFAULT_ACCOUNT"),
+                    maxSupply: MAX_SUPPLY,
+                    maxWalletSize: 10,
+                    batchLimit: 10,
+                    royaltyNumerator: 500 // 5%
+                }),
                 feeAddress: vm.envAddress("ANVIL_DEFAULT_ACCOUNT"),
                 tokenAddress: address(token),
                 ethFee: ETH_FEE,
                 tokenFee: TOKEN_FEE,
-                maxSupply: MAX_SUPPLY,
                 merkleRoot: MERKLE_ROOT
             })
         });

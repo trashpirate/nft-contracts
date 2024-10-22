@@ -9,23 +9,23 @@ import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.so
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC721A} from "@erc721a/contracts/IERC721A.sol";
 
-import {DeployNFTFeeHandler} from "script/deployment/DeployNFTFeeHandler.s.sol";
-import {NFTFeeHandler} from "src/NFTFeeHandler.sol";
+import {DeployERC721AFeeHandler} from "script/deployment/DeployERC721AFeeHandler.s.sol";
+import {ERC721AFeeHandler} from "src/examples/ERC721AFeeHandler.sol";
 import {FeeHandler} from "src/extensions/FeeHandler.sol";
 import {HelperConfig} from "script/helpers/HelperConfig.s.sol";
 
-contract NFTFeeHandlerUnitTest is Test {
+contract ERC721AFeeHandlerUnitTest is Test {
     /*//////////////////////////////////////////////////////////////
                              CONFIGURATION
     //////////////////////////////////////////////////////////////*/
-    DeployNFTFeeHandler deployer;
+    DeployERC721AFeeHandler deployer;
     HelperConfig helperConfig;
     HelperConfig.NetworkConfig networkConfig;
 
     /*//////////////////////////////////////////////////////////////
                                CONTRACTS
     //////////////////////////////////////////////////////////////*/
-    NFTFeeHandler nftContract;
+    ERC721AFeeHandler nftContract;
     ERC20Mock token;
 
     /*//////////////////////////////////////////////////////////////
@@ -67,7 +67,7 @@ contract NFTFeeHandlerUnitTest is Test {
     //////////////////////////////////////////////////////////////*/
 
     function setUp() external virtual {
-        deployer = new DeployNFTFeeHandler();
+        deployer = new DeployERC721AFeeHandler();
         (nftContract, helperConfig) = deployer.run();
 
         networkConfig = helperConfig.getActiveNetworkConfigStruct();
@@ -86,7 +86,7 @@ contract NFTFeeHandlerUnitTest is Test {
     /*//////////////////////////////////////////////////////////////
                           TEST   INITIALIZATION
     //////////////////////////////////////////////////////////////*/
-    function test__NFTFeeHandler__Initialization() public {
+    function test__ERC721AFeeHandler__Initialization() public {
         assertEq(nftContract.getFeeAddress(), networkConfig.args.feeAddress);
         assertEq(nftContract.getFeeToken(), networkConfig.args.tokenAddress);
 
@@ -103,37 +103,26 @@ contract NFTFeeHandlerUnitTest is Test {
     /*//////////////////////////////////////////////////////////////
                             TEST DEPLOYMENT
     //////////////////////////////////////////////////////////////*/
-    function test__NFTFeeHandler__RevertWhen__ZeroFeeAddress() public {
+    function test__ERC721AFeeHandler__RevertWhen__ZeroFeeAddress() public {
         HelperConfig.ConstructorArguments memory args = networkConfig.args;
 
         args.feeAddress = address(0);
         //ERC2981InvalidDefaultRoyaltyReceiver
         vm.expectRevert(FeeHandler.FeeHandler_FeeAddressIsZeroAddress.selector);
-        new NFTFeeHandler(
-            args.name,
-            args.symbol,
-            args.baseURI,
-            args.contractURI,
-            args.owner,
-            args.feeAddress,
-            args.tokenAddress,
-            args.tokenFee,
-            args.ethFee,
-            args.maxSupply
-        );
+        new ERC721AFeeHandler(args.coreConfig, args.feeAddress, args.tokenAddress, args.tokenFee, args.ethFee);
     }
 
     /*//////////////////////////////////////////////////////////////
                            TEST SET FEEADDRESS
     //////////////////////////////////////////////////////////////*/
-    function test__NFTFeeHandler__SetEthFeeAddress() public {
+    function test__ERC721AFeeHandler__SetEthFeeAddress() public {
         address owner = nftContract.owner();
         vm.prank(owner);
         nftContract.setFeeAddress(NEW_FEE_ADDRESS);
         assertEq(nftContract.getFeeAddress(), NEW_FEE_ADDRESS);
     }
 
-    function test__NFTFeeHandler__EmitEvent__SetEthFeeAddress() public {
+    function test__ERC721AFeeHandler__EmitEvent__SetEthFeeAddress() public {
         address owner = nftContract.owner();
 
         vm.expectEmit(true, true, true, true);
@@ -143,7 +132,7 @@ contract NFTFeeHandlerUnitTest is Test {
         nftContract.setFeeAddress(NEW_FEE_ADDRESS);
     }
 
-    function test__NFTFeeHandler__RevertWhen__FeeAddressIsZero() public {
+    function test__ERC721AFeeHandler__RevertWhen__FeeAddressIsZero() public {
         address owner = nftContract.owner();
         vm.prank(owner);
 
@@ -151,7 +140,7 @@ contract NFTFeeHandlerUnitTest is Test {
         nftContract.setFeeAddress(address(0));
     }
 
-    function test__NFTFeeHandler__RevertWhen__NotOwnerSetsFeeAddress() public {
+    function test__ERC721AFeeHandler__RevertWhen__NotOwnerSetsFeeAddress() public {
         vm.prank(USER);
 
         vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, USER));
@@ -161,14 +150,14 @@ contract NFTFeeHandlerUnitTest is Test {
     /*//////////////////////////////////////////////////////////////
                              TEST SET ETHFEE
     //////////////////////////////////////////////////////////////*/
-    function test__NFTFeeHandler__SetEthFee() public {
+    function test__ERC721AFeeHandler__SetEthFee() public {
         address owner = nftContract.owner();
         vm.prank(owner);
         nftContract.setEthFee(NEW_FEE);
         assertEq(nftContract.getEthFee(), NEW_FEE);
     }
 
-    function test__NFTFeeHandler__EmitEvent__SetEthFee() public {
+    function test__ERC721AFeeHandler__EmitEvent__SetEthFee() public {
         address owner = nftContract.owner();
 
         vm.expectEmit(true, true, true, true);
@@ -178,7 +167,7 @@ contract NFTFeeHandlerUnitTest is Test {
         nftContract.setEthFee(NEW_FEE);
     }
 
-    function test__NFTFeeHandler__RevertWhen__NotOwnerSetsEthFee() public {
+    function test__ERC721AFeeHandler__RevertWhen__NotOwnerSetsEthFee() public {
         vm.prank(USER);
 
         vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, USER));
@@ -188,14 +177,14 @@ contract NFTFeeHandlerUnitTest is Test {
     /*//////////////////////////////////////////////////////////////
                             TEST SET TOKENFEE
     //////////////////////////////////////////////////////////////*/
-    function test__NFTFeeHandler__SetTokenFee() public {
+    function test__ERC721AFeeHandler__SetTokenFee() public {
         address owner = nftContract.owner();
         vm.prank(owner);
         nftContract.setTokenFee(NEW_FEE);
         assertEq(nftContract.getTokenFee(), NEW_FEE);
     }
 
-    function test__NFTFeeHandler__EmitEvent__SetTokenFee() public {
+    function test__ERC721AFeeHandler__EmitEvent__SetTokenFee() public {
         address owner = nftContract.owner();
 
         vm.expectEmit(true, true, true, true);
@@ -205,7 +194,7 @@ contract NFTFeeHandlerUnitTest is Test {
         nftContract.setTokenFee(NEW_FEE);
     }
 
-    function test__NFTFeeHandler__RevertWhen__NotOwnerSetsTokenFee() public {
+    function test__ERC721AFeeHandler__RevertWhen__NotOwnerSetsTokenFee() public {
         vm.prank(USER);
 
         vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, USER));
@@ -218,7 +207,7 @@ contract NFTFeeHandlerUnitTest is Test {
 
     /// SUCCESS
     ////////////////////////////////////////////////////////////*/
-    function test__NFTFeeHandler__Mint(uint256 quantity, address account) public skipFork {
+    function test__ERC721AFeeHandler__Mint(uint256 quantity, address account) public skipFork {
         quantity = bound(quantity, 1, nftContract.getBatchLimit());
         vm.assume(account != address(0));
         vm.assume(account != nftContract.getFeeAddress());
@@ -251,7 +240,7 @@ contract NFTFeeHandlerUnitTest is Test {
 
     /// REVERTS
     ////////////////////////////////////////////////////////////*/
-    function test__NFTFeeHandler__RevertWhen__InsufficientEthFee(uint256 quantity) public funded(USER) skipFork {
+    function test__ERC721AFeeHandler__RevertWhen__InsufficientEthFee(uint256 quantity) public funded(USER) skipFork {
         quantity = bound(quantity, 1, nftContract.getBatchLimit());
 
         address owner = nftContract.owner();
@@ -272,7 +261,7 @@ contract NFTFeeHandlerUnitTest is Test {
         nftContract.mint{value: insufficientFee}(quantity);
     }
 
-    function test__NFTFeeHandler__RevertWhen__InsufficientAllowance() public funded(USER) {
+    function test__ERC721AFeeHandler__RevertWhen__InsufficientAllowance() public funded(USER) {
         uint256 ethFee = nftContract.getEthFee();
         uint256 tokenFee = nftContract.getTokenFee();
 
@@ -283,7 +272,7 @@ contract NFTFeeHandlerUnitTest is Test {
         nftContract.mint{value: ethFee}(1);
     }
 
-    function test__NFTFeeHandler__RevertWhen__MintTokenTransferFails(uint256 quantity) public skipFork {
+    function test__ERC721AFeeHandler__RevertWhen__MintTokenTransferFails(uint256 quantity) public skipFork {
         quantity = bound(quantity, 1, nftContract.getBatchLimit());
 
         fund(USER);
@@ -304,7 +293,7 @@ contract NFTFeeHandlerUnitTest is Test {
         nftContract.mint{value: ethFee}(quantity);
     }
 
-    function test__NFTFeeHandler__RevertWhen__MintEthTransferFails(uint256 quantity) public skipFork {
+    function test__ERC721AFeeHandler__RevertWhen__MintEthTransferFails(uint256 quantity) public skipFork {
         quantity = bound(quantity, 1, nftContract.getBatchLimit());
 
         fund(USER);
@@ -323,7 +312,7 @@ contract NFTFeeHandlerUnitTest is Test {
         nftContract.mint{value: ethFee}(quantity);
     }
 
-    function test__NFTFeeHandler__ChargesNoFeeIfZeroEthFee() public funded(USER) {
+    function test__ERC721AFeeHandler__ChargesNoFeeIfZeroEthFee() public funded(USER) {
         uint256 tokenFee = nftContract.getTokenFee();
 
         uint256 ethBalance = USER.balance;

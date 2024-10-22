@@ -2,38 +2,27 @@
 pragma solidity 0.8.20;
 
 import {Whitelist} from "src/extensions/Whitelist.sol";
-import {NFTBasic} from "src/NFTBasic.sol";
+import {ERC721ACore} from "src/ERC721ACore.sol";
 
-/// @title NFTWhitelist
+/// @title ERC721AWhitelist
 /// @author Nadina Oates
 /// @notice Contract implementing ERC721A standard with Whitelist extension
 
-contract NFTWhitelist is NFTBasic, Whitelist {
+contract ERC721AWhitelist is ERC721ACore, Whitelist {
     /*//////////////////////////////////////////////////////////////
                                  EVENTS
     //////////////////////////////////////////////////////////////*/
-    error NFTWhitelist__InvalidMinter();
+    error ERC721AWhitelist__InvalidMinter();
 
     /*//////////////////////////////////////////////////////////////
                                FUNCTIONS
     //////////////////////////////////////////////////////////////*/
 
     /// @notice Constructor
-    /// @param name_ collection name
-    /// @param symbol_ nft symbol
-    /// @param baseURI_ base uri
-    /// @param contractURI_ contract uri
-    /// @param owner_ contract owner
-    /// @param maxSupply_ maximum nfts mintable
-    constructor(
-        string memory name_,
-        string memory symbol_,
-        string memory baseURI_,
-        string memory contractURI_,
-        address owner_,
-        uint256 maxSupply_,
-        bytes32 merkleRoot_
-    ) NFTBasic(name_, symbol_, baseURI_, contractURI_, owner_, maxSupply_) Whitelist(merkleRoot_) {}
+    constructor(ERC721ACore.CoreConfig memory coreConfig, bytes32 merkleRoot_)
+        ERC721ACore(coreConfig)
+        Whitelist(merkleRoot_)
+    {}
 
     /*//////////////////////////////////////////////////////////////
                            EXTERNAL FUNCTIONS

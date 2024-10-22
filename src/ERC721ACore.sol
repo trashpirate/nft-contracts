@@ -8,15 +8,28 @@ import {ERC2981} from "@openzeppelin/contracts/token/common/ERC2981.sol";
 import {ERC721A, IERC721A} from "@erc721a/contracts/ERC721A.sol";
 import {ERC721ABurnable} from "@erc721a/contracts/extensions/ERC721ABurnable.sol";
 
-/// @title NFTBasic
+/// @title ERC721ACore
 /// @author Nadina Oates
 /// @notice Contract implementing ERC721A standard using ERC20 token and/or ETH for minting
 /// @dev Inherits from ERC721A and ERC721ABurnable and openzeppelin Ownable
 
-contract NFTBasic is ERC721A, ERC2981, ERC721ABurnable, Ownable {
+contract ERC721ACore is ERC721A, ERC2981, ERC721ABurnable, Ownable {
     /*//////////////////////////////////////////////////////////////
                                  TYPES
     //////////////////////////////////////////////////////////////*/
+
+    struct CoreConfig {
+        string name;
+        string symbol;
+        string baseURI;
+        string contractURI;
+        address owner;
+        uint256 maxSupply;
+        uint256 maxWalletSize;
+        uint256 batchLimit;
+        uint96 royaltyNumerator;
+    }
+
     /*//////////////////////////////////////////////////////////////
                             STATE VARIABLES
     //////////////////////////////////////////////////////////////*/
@@ -41,25 +54,25 @@ contract NFTBasic is ERC721A, ERC2981, ERC721ABurnable, Ownable {
     /*//////////////////////////////////////////////////////////////
                                  ERRORS
     //////////////////////////////////////////////////////////////*/
-    error NFTBasic_InsufficientMintQuantity();
-    error NFTBasic_ExceedsMaxSupply();
-    error NFTBasic_ExceedsMaxPerWallet();
-    error NFTBasic_ExceedsBatchLimit();
-    error NFTBasic_TokenTransferFailed();
-    error NFTBasic_EthTransferFailed();
-    error NFTBasic_BatchLimitTooHigh();
-    error NFTBasic_NoBaseURI();
+    error ERC721ACore_InsufficientMintQuantity();
+    error ERC721ACore_ExceedsMaxSupply();
+    error ERC721ACore_ExceedsMaxPerWallet();
+    error ERC721ACore_ExceedsBatchLimit();
+    error ERC721ACore_TokenTransferFailed();
+    error ERC721ACore_EthTransferFailed();
+    error ERC721ACore_BatchLimitTooHigh();
+    error ERC721ACore_NoBaseURI();
 
     /*//////////////////////////////////////////////////////////////
                                MODIFIERS
     //////////////////////////////////////////////////////////////*/
 
     modifier validQuantity(uint256 quantity) {
-        if (quantity == 0) revert NFTBasic_InsufficientMintQuantity();
-        if (quantity > s_batchLimit) revert NFTBasic_ExceedsBatchLimit();
-        if (s_maxWalletSize > 0 && quantity > s_maxWalletSize) revert NFTBasic_ExceedsMaxPerWallet();
+        if (quantity == 0) revert ERC721ACore_InsufficientMintQuantity();
+        if (quantity > s_batchLimit) revert ERC721ACore_ExceedsBatchLimit();
+        if (s_maxWalletSize > 0 && quantity > s_maxWalletSize) revert ERC721ACore_ExceedsMaxPerWallet();
         if (totalSupply() + quantity > i_maxSupply) {
-            revert NFTBasic_ExceedsMaxSupply();
+            revert ERC721ACore_ExceedsMaxSupply();
         }
         _;
     }
@@ -80,28 +93,21 @@ contract NFTBasic is ERC721A, ERC2981, ERC721ABurnable, Ownable {
     ///                     baseURI: base uri
     ///                     contractURI: contract uri
     ///                     maxSupply: maximum nfts mintable
-    constructor(
-        string memory name_,
-        string memory symbol_,
-        string memory baseURI_,
-        string memory contractURI_,
-        address owner_,
-        uint256 maxSupply_
-    ) ERC721A(name_, symbol_) Ownable(msg.sender) {
-        if (bytes(baseURI_).length == 0) revert NFTBasic_NoBaseURI();
+    constructor(CoreConfig memory config) ERC721A(config.name, config.symbol) Ownable(msg.sender) {
+        if (bytes(config.baseURI).length == 0) revert ERC721ACore_NoBaseURI();
 
-        i_maxSupply = maxSupply_;
+        i_maxSupply = config.maxSupply;
 
-        s_batchLimit = 10;
-        s_maxWalletSize = 10;
+        s_batchLimit = config.batchLimit;
+        s_maxWalletSize = config.maxWalletSize;
 
         // initialize metadata
-        _setBaseURI(baseURI_);
-        _setContractURI(contractURI_);
-        _setDefaultRoyalty(owner_, 500); // 5% = 500
+        _setBaseURI(config.baseURI);
+        _setContractURI(config.contractURI);
+        _setDefaultRoyalty(config.owner, config.royaltyNumerator); // 5% = 500
 
         // set ownership
-        if (owner_ != msg.sender) _transferOwnership(owner_);
+        if (config.owner != msg.sender) _transferOwnership(config.owner);
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -117,7 +123,7 @@ contract NFTBasic is ERC721A, ERC2981, ERC721ABurnable, Ownable {
     /// @notice Sets batch limit - maximum number of nfts that can be minted at once (only owner)
     /// @param batchLimit Maximum number of nfts that can be minted at once
     function setBatchLimit(uint256 batchLimit) external onlyOwner {
-        if (batchLimit > 100) revert NFTBasic_BatchLimitTooHigh();
+        if (batchLimit > 100) revert ERC721ACore_BatchLimitTooHigh();
         s_batchLimit = batchLimit;
         emit BatchLimitSet(msg.sender, batchLimit);
     }
@@ -137,7 +143,7 @@ contract NFTBasic is ERC721A, ERC2981, ERC721ABurnable, Ownable {
         IERC20 tokenContract = IERC20(tokenAddress);
         uint256 amount = tokenContract.balanceOf(address(this));
         success = tokenContract.transfer(receiverAddress, amount);
-        if (!success) revert NFTBasic_TokenTransferFailed();
+        if (!success) revert ERC721ACore_TokenTransferFailed();
     }
 
     /// @notice Withdraw ETH from contract (only owner)
@@ -146,7 +152,7 @@ contract NFTBasic is ERC721A, ERC2981, ERC721ABurnable, Ownable {
     function withdrawETH(address receiverAddress) external onlyOwner returns (bool success) {
         uint256 amount = address(this).balance;
         (success,) = payable(receiverAddress).call{value: amount}("");
-        if (!success) revert NFTBasic_EthTransferFailed();
+        if (!success) revert ERC721ACore_EthTransferFailed();
     }
 
     /// @notice Sets base Uri

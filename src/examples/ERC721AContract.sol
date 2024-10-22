@@ -4,14 +4,14 @@ pragma solidity 0.8.20;
 import {Pausable} from "src/utils/Pausable.sol";
 import {PseudoRandomized} from "src/extensions/PseudoRandomized.sol";
 import {FeeHandler} from "src/extensions/FeeHandler.sol";
-import {NFTBasic, ERC721A} from "src/NFTBasic.sol";
+import {ERC721ACore, ERC721A} from "src/ERC721ACore.sol";
 
 /// @title NFTContract NFTs
 /// @author Nadina Oates
 /// @notice Contract implementing ERC721A standard using ERC20 token and/or ETH for minting
 /// @dev Inherits from ERC721A and ERC721ABurnable and openzeppelin Ownable
 
-contract NFTContract is NFTBasic, Pausable, PseudoRandomized, FeeHandler {
+contract ERC721AContract is ERC721ACore, Pausable, PseudoRandomized, FeeHandler {
     /*//////////////////////////////////////////////////////////////
                                  TYPES
     //////////////////////////////////////////////////////////////*/
@@ -36,31 +36,16 @@ contract NFTContract is NFTBasic, Pausable, PseudoRandomized, FeeHandler {
     //////////////////////////////////////////////////////////////*/
 
     /// @notice Constructor
-    /// @param name_ collection name
-    /// @param symbol_ nft symbol
-    /// @param baseURI_ base uri
-    /// @param contractURI_ contract uri
-    /// @param owner_ contract owner
-    /// @param feeAddress_ address for fees
-    /// @param tokenAddress_ erc20 token address used for fees
-    /// @param maxSupply_ maximum nfts mintable
-    /// @param ethFee_ minting fee in native coin
-    /// @param tokenFee_ minting fee in erc20
     constructor(
-        string memory name_,
-        string memory symbol_,
-        string memory baseURI_,
-        string memory contractURI_,
-        address owner_,
-        address feeAddress_,
-        address tokenAddress_,
-        uint256 tokenFee_,
-        uint256 ethFee_,
-        uint256 maxSupply_
+        ERC721ACore.CoreConfig memory coreConfig,
+        address feeAddress,
+        address tokenAddress,
+        uint256 tokenFee,
+        uint256 ethFee
     )
-        NFTBasic(name_, symbol_, baseURI_, contractURI_, owner_, maxSupply_)
-        PseudoRandomized(maxSupply_)
-        FeeHandler(tokenAddress_, feeAddress_, tokenFee_, ethFee_)
+        ERC721ACore(coreConfig)
+        PseudoRandomized(coreConfig.maxSupply)
+        FeeHandler(tokenAddress, feeAddress, tokenFee, ethFee)
     {}
 
     /*//////////////////////////////////////////////////////////////
@@ -117,7 +102,7 @@ contract NFTContract is NFTBasic, Pausable, PseudoRandomized, FeeHandler {
         public
         view
         virtual
-        override(NFTBasic, PseudoRandomized)
+        override(ERC721ACore, PseudoRandomized)
         returns (string memory)
     {
         return PseudoRandomized.tokenURI(tokenId);
@@ -126,8 +111,8 @@ contract NFTContract is NFTBasic, Pausable, PseudoRandomized, FeeHandler {
     /// @notice checks for supported interface
     /// @dev function override required by ERC721A
     /// @param interfaceId interfaceId to be checked
-    function supportsInterface(bytes4 interfaceId) public view override(ERC721A, NFTBasic) returns (bool) {
-        return NFTBasic.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId) public view override(ERC721A, ERC721ACore) returns (bool) {
+        return ERC721ACore.supportsInterface(interfaceId);
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -136,13 +121,13 @@ contract NFTContract is NFTBasic, Pausable, PseudoRandomized, FeeHandler {
 
     /// @notice Retrieves base uri
     /// @dev override required by ERC721A
-    function _baseURI() internal view override(ERC721A, NFTBasic) returns (string memory) {
-        return NFTBasic._baseURI();
+    function _baseURI() internal view override(ERC721A, ERC721ACore) returns (string memory) {
+        return ERC721ACore._baseURI();
     }
 
     /// @notice sets first tokenId to 1
     /// @dev override required by ERC721A
-    function _startTokenId() internal view override(NFTBasic, PseudoRandomized) returns (uint256) {
+    function _startTokenId() internal view override(ERC721ACore, PseudoRandomized) returns (uint256) {
         return PseudoRandomized._startTokenId();
     }
 }

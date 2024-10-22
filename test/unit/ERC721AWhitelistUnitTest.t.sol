@@ -4,23 +4,23 @@ pragma solidity ^0.8.20;
 
 import {Test, console} from "forge-std/Test.sol";
 
-import {DeployNFTWhitelist} from "script/deployment/DeployNFTWhitelist.s.sol";
-import {NFTWhitelist} from "src/NFTWhitelist.sol";
+import {DeployERC721AWhitelist} from "script/deployment/DeployERC721AWhitelist.s.sol";
+import {ERC721AWhitelist} from "src/examples/ERC721AWhitelist.sol";
 import {Whitelist} from "src/extensions/Whitelist.sol";
 import {HelperConfig} from "script/helpers/HelperConfig.s.sol";
 
-contract NFTWhitelistUnitTest is Test {
+contract ERC721AWhitelistUnitTest is Test {
     /*//////////////////////////////////////////////////////////////
                              CONFIGURATION
     //////////////////////////////////////////////////////////////*/
-    DeployNFTWhitelist deployer;
+    DeployERC721AWhitelist deployer;
     HelperConfig helperConfig;
     HelperConfig.NetworkConfig networkConfig;
 
     /*//////////////////////////////////////////////////////////////
                                CONTRACTS
     //////////////////////////////////////////////////////////////*/
-    NFTWhitelist nftContract;
+    ERC721AWhitelist nftContract;
 
     /*//////////////////////////////////////////////////////////////
                                 HELPERS
@@ -55,7 +55,7 @@ contract NFTWhitelistUnitTest is Test {
                                  SETUP
     //////////////////////////////////////////////////////////////*/
     function setUp() external virtual {
-        deployer = new DeployNFTWhitelist();
+        deployer = new DeployERC721AWhitelist();
         (nftContract, helperConfig) = deployer.run();
 
         networkConfig = helperConfig.getActiveNetworkConfigStruct();
@@ -66,7 +66,7 @@ contract NFTWhitelistUnitTest is Test {
     /*//////////////////////////////////////////////////////////////
                           GET VALID USER ADDRESS
     //////////////////////////////////////////////////////////////*/
-    function test__NFTWhitelist__GetValidUserAddress() external view {
+    function test__ERC721AWhitelist__GetValidUserAddress() external view {
         console.log("VALID_USER: ", VALID_USER);
         console.log("VALID_USER_KEY: ", VALID_USER_KEY);
     }
@@ -74,7 +74,7 @@ contract NFTWhitelistUnitTest is Test {
     /*//////////////////////////////////////////////////////////////
                              INITIALIZATION
     //////////////////////////////////////////////////////////////*/
-    function test__NFTWhitelist__Initialization() external view {
+    function test__ERC721AWhitelist__Initialization() external view {
         assertEq(nftContract.getMerkleRoot(), networkConfig.args.merkleRoot);
         assertEq(nftContract.hasClaimed(VALID_USER), false);
     }
@@ -82,7 +82,7 @@ contract NFTWhitelistUnitTest is Test {
     /*//////////////////////////////////////////////////////////////
                             SET MERKLE ROOT
     //////////////////////////////////////////////////////////////*/
-    function test__NFTWhitelist__SetMerkleRoot() external {
+    function test__ERC721AWhitelist__SetMerkleRoot() external {
         address owner = nftContract.owner();
 
         vm.prank(owner);
@@ -97,7 +97,7 @@ contract NFTWhitelistUnitTest is Test {
 
     /// SUCCESS
     //////////////////////////////////////////////////////////////*/
-    function test__NFTWhitelist__Mint() external {
+    function test__ERC721AWhitelist__Mint() external {
         uint256 balance = nftContract.balanceOf(VALID_USER);
 
         // mint
@@ -109,7 +109,7 @@ contract NFTWhitelistUnitTest is Test {
 
     /// EMIT EVENTS
     //////////////////////////////////////////////////////////////*/
-    function test__NFTWhitelist__EmitEvent__ClaimStatusSet() external {
+    function test__ERC721AWhitelist__EmitEvent__ClaimStatusSet() external {
         vm.expectEmit(true, true, true, true);
         emit ClaimStatusSet(VALID_USER, true);
 
@@ -120,7 +120,7 @@ contract NFTWhitelistUnitTest is Test {
 
     /// REVERTS
     //////////////////////////////////////////////////////////////*/
-    function test__NFTWhitelist__RevertsWhen__InvalidProof() external {
+    function test__ERC721AWhitelist__RevertsWhen__InvalidProof() external {
         vm.expectRevert(Whitelist.Whitelist__InvalidProof.selector);
 
         // mint
@@ -128,7 +128,7 @@ contract NFTWhitelistUnitTest is Test {
         nftContract.mint(1, PROOF);
     }
 
-    function test__NFTWhitelist__RevertsWhen__AlreadyClaimed() external {
+    function test__ERC721AWhitelist__RevertsWhen__AlreadyClaimed() external {
         // mint
         vm.prank(VALID_USER);
         nftContract.mint(1, PROOF);
@@ -143,7 +143,7 @@ contract NFTWhitelistUnitTest is Test {
     /*//////////////////////////////////////////////////////////////
                            TEST CLAIM STATUS
     //////////////////////////////////////////////////////////////*/
-    function test__NFTWhitelist__UpdatesClaimStatus() external {
+    function test__ERC721AWhitelist__UpdatesClaimStatus() external {
         // mint
         vm.prank(VALID_USER);
         nftContract.mint(1, PROOF);

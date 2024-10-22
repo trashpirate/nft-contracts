@@ -8,23 +8,23 @@ import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.so
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 import {StringToNumber} from "test/utils/Utils.sol";
-import {DeployNFTPseudoRandomized} from "script/deployment/DeployNFTPseudoRandomized.s.sol";
-import {NFTPseudoRandomized, NFTBasic} from "src/NFTPseudoRandomized.sol";
+import {DeployERC721APseudoRandomized} from "script/deployment/DeployERC721APseudoRandomized.s.sol";
+import {ERC721APseudoRandomized, ERC721ACore} from "src/examples/ERC721APseudoRandomized.sol";
 import {HelperConfig} from "script/helpers/HelperConfig.s.sol";
 import {TestHelper} from "test/utils/TestHelper.sol";
 
-contract NFTPseudoRandomizedTest is Test {
+contract ERC721APseudoRandomizedTest is Test {
     /*//////////////////////////////////////////////////////////////
                              CONFIGURATION
     //////////////////////////////////////////////////////////////*/
-    DeployNFTPseudoRandomized deployment;
+    DeployERC721APseudoRandomized deployment;
     HelperConfig helperConfig;
     HelperConfig.NetworkConfig networkConfig;
 
     /*//////////////////////////////////////////////////////////////
                                CONTRACTS
     //////////////////////////////////////////////////////////////*/
-    NFTPseudoRandomized nftContract;
+    ERC721APseudoRandomized nftContract;
 
     /*//////////////////////////////////////////////////////////////
                                 HELPERS
@@ -63,7 +63,7 @@ contract NFTPseudoRandomizedTest is Test {
                                  SETUP
     //////////////////////////////////////////////////////////////*/
     function setUp() external virtual {
-        deployment = new DeployNFTPseudoRandomized();
+        deployment = new DeployERC721APseudoRandomized();
         (nftContract, helperConfig) = deployment.run();
 
         networkConfig = helperConfig.getActiveNetworkConfigStruct();
@@ -72,7 +72,7 @@ contract NFTPseudoRandomizedTest is Test {
     /*//////////////////////////////////////////////////////////////
                           TEST SUPPORTS INTERFACE
     //////////////////////////////////////////////////////////////*/
-    function test__NFTPseudoRandomized__SupportsInterface() public view {
+    function test__ERC721APseudoRandomized__SupportsInterface() public view {
         assertEq(nftContract.supportsInterface(0x80ac58cd), true); // ERC721
         assertEq(nftContract.supportsInterface(0x2a55205a), true); // ERC2981
     }
@@ -80,7 +80,7 @@ contract NFTPseudoRandomizedTest is Test {
     /*//////////////////////////////////////////////////////////////
                              TEST TOKEN URI
     //////////////////////////////////////////////////////////////*/
-    function test__NFTPseudoRandomized__batchTokenURI() public {
+    function test__ERC721APseudoRandomized__batchTokenURI() public {
         uint256 roll = 2;
         uint256 batchLimit = nftContract.getBatchLimit();
         for (uint256 index = 0; index < 20; index++) {
@@ -96,7 +96,7 @@ contract NFTPseudoRandomizedTest is Test {
     }
 
     /// forge-config: default.fuzz.runs = 3
-    function test__NFTPseudoRandomized__UniqueTokenURI() public skipFork {
+    function test__ERC721APseudoRandomized__UniqueTokenURI() public skipFork {
         uint256 roll = 3; // bound(roll, 0, 100000000000);
         TestHelper testHelper = new TestHelper();
 

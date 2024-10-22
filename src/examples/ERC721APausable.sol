@@ -2,32 +2,19 @@
 pragma solidity 0.8.20;
 
 import {Pausable} from "src/utils/Pausable.sol";
-import {NFTBasic} from "src/NFTBasic.sol";
+import {ERC721ACore} from "src/ERC721ACore.sol";
 
 /// @title NFTPausable
 /// @author Nadina Oates
 /// @notice Contract implementing ERC721A standard with pausable extension
 
-contract NFTPausable is NFTBasic, Pausable {
+contract ERC721APausable is ERC721ACore, Pausable {
     /*//////////////////////////////////////////////////////////////
                                FUNCTIONS
     //////////////////////////////////////////////////////////////*/
 
     /// @notice Constructor
-    /// @param name_ collection name
-    /// @param symbol_ nft symbol
-    /// @param baseURI_ base uri
-    /// @param contractURI_ contract uri
-    /// @param owner_ contract owner
-    /// @param maxSupply_ maximum nfts mintable
-    constructor(
-        string memory name_,
-        string memory symbol_,
-        string memory baseURI_,
-        string memory contractURI_,
-        address owner_,
-        uint256 maxSupply_
-    ) NFTBasic(name_, symbol_, baseURI_, contractURI_, owner_, maxSupply_) {}
+    constructor(ERC721ACore.CoreConfig memory coreConfig) ERC721ACore(coreConfig) {}
 
     /*//////////////////////////////////////////////////////////////
                            EXTERNAL FUNCTIONS

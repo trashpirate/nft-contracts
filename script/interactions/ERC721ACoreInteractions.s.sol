@@ -4,39 +4,39 @@ pragma solidity ^0.8.20;
 import {Script, console} from "forge-std/Script.sol";
 import {DevOpsTools} from "foundry-devops/src/DevOpsTools.sol";
 
-import {NFTBasic} from "src/NFTBasic.sol";
+import {ERC721ACore} from "src/ERC721ACore.sol";
 
 contract MintNft is Script {
     function mintNft(address recentContractAddress) public {
         vm.startBroadcast();
         uint256 gasLeft = gasleft();
-        NFTBasic(recentContractAddress).mint(1);
+        ERC721ACore(recentContractAddress).mint(1);
         console.log("Minting gas: ", gasLeft - gasleft());
         vm.stopBroadcast();
         console.log("Minted 1 NFT with:", msg.sender);
     }
 
     function run() external {
-        address recentContractAddress = DevOpsTools.get_most_recent_deployment("NFTBasic", block.chainid);
+        address recentContractAddress = DevOpsTools.get_most_recent_deployment("ERC721ACore", block.chainid);
         mintNft(recentContractAddress);
     }
 }
 
 contract BatchMint is Script {
     function batchMint(address recentContractAddress) public {
-        uint256 batchLimit = NFTBasic(recentContractAddress).getBatchLimit();
+        uint256 batchLimit = ERC721ACore(recentContractAddress).getBatchLimit();
 
         vm.startBroadcast();
 
         uint256 gasLeft = gasleft();
-        NFTBasic(recentContractAddress).mint(batchLimit);
+        ERC721ACore(recentContractAddress).mint(batchLimit);
         console.log("Minting gas: ", gasLeft - gasleft());
         vm.stopBroadcast();
         console.log("Minted batch with:", msg.sender);
     }
 
     function run() external {
-        address recentContractAddress = DevOpsTools.get_most_recent_deployment("NFTBasic", block.chainid);
+        address recentContractAddress = DevOpsTools.get_most_recent_deployment("ERC721ACore", block.chainid);
         batchMint(recentContractAddress);
     }
 }
@@ -46,12 +46,12 @@ contract TransferNft is Script {
 
     function transferNft(address recentContractAddress) public {
         vm.startBroadcast();
-        NFTBasic(recentContractAddress).transferFrom(tx.origin, NEW_USER, 1);
+        ERC721ACore(recentContractAddress).transferFrom(tx.origin, NEW_USER, 1);
         vm.stopBroadcast();
     }
 
     function run() external {
-        address recentContractAddress = DevOpsTools.get_most_recent_deployment("NFTBasic", block.chainid);
+        address recentContractAddress = DevOpsTools.get_most_recent_deployment("ERC721ACore", block.chainid);
         transferNft(recentContractAddress);
     }
 }
@@ -61,12 +61,12 @@ contract ApproveNft is Script {
 
     function approveNft(address recentContractAddress) public {
         vm.startBroadcast();
-        NFTBasic(recentContractAddress).approve(SENDER, 1);
+        ERC721ACore(recentContractAddress).approve(SENDER, 1);
         vm.stopBroadcast();
     }
 
     function run() external {
-        address recentContractAddress = DevOpsTools.get_most_recent_deployment("NFTBasic", block.chainid);
+        address recentContractAddress = DevOpsTools.get_most_recent_deployment("ERC721ACore", block.chainid);
         approveNft(recentContractAddress);
     }
 }
@@ -76,12 +76,12 @@ contract BurnNft is Script {
 
     function burnNft(address recentContractAddress) public {
         vm.startBroadcast();
-        NFTBasic(recentContractAddress).burn(1);
+        ERC721ACore(recentContractAddress).burn(1);
         vm.stopBroadcast();
     }
 
     function run() external {
-        address recentContractAddress = DevOpsTools.get_most_recent_deployment("NFTBasic", block.chainid);
+        address recentContractAddress = DevOpsTools.get_most_recent_deployment("ERC721ACore", block.chainid);
         burnNft(recentContractAddress);
     }
 }

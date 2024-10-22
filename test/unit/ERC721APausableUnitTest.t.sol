@@ -6,23 +6,23 @@ import {Test, console} from "forge-std/Test.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC721A} from "@erc721a/contracts/IERC721A.sol";
 
-import {DeployNFTPausable} from "script/deployment/DeployNFTPausable.s.sol";
-import {NFTPausable} from "src/NFTPausable.sol";
+import {DeployERC721APausable} from "script/deployment/DeployERC721APausable.s.sol";
+import {ERC721APausable} from "src/examples/ERC721APausable.sol";
 import {Pausable} from "src/utils/Pausable.sol";
 import {HelperConfig} from "script/helpers/HelperConfig.s.sol";
 
-contract NFTPausableUnitTest is Test {
+contract ERC721APausableUnitTest is Test {
     /*//////////////////////////////////////////////////////////////
                              CONFIGURATION
     //////////////////////////////////////////////////////////////*/
-    DeployNFTPausable nftPausableDeployer;
+    DeployERC721APausable nftPausableDeployer;
     HelperConfig helperConfig;
     HelperConfig.NetworkConfig networkConfig;
 
     /*//////////////////////////////////////////////////////////////
                                CONTRACTS
     //////////////////////////////////////////////////////////////*/
-    NFTPausable nftContract;
+    ERC721APausable nftContract;
 
     /*//////////////////////////////////////////////////////////////
                                 HELPERS
@@ -51,7 +51,7 @@ contract NFTPausableUnitTest is Test {
                                  SETUP
     //////////////////////////////////////////////////////////////*/
     function setUp() external virtual {
-        nftPausableDeployer = new DeployNFTPausable();
+        nftPausableDeployer = new DeployERC721APausable();
         (nftContract, helperConfig) = nftPausableDeployer.run();
 
         networkConfig = helperConfig.getActiveNetworkConfigStruct();
@@ -60,28 +60,14 @@ contract NFTPausableUnitTest is Test {
     /*//////////////////////////////////////////////////////////////
                           TEST   INITIALIZATION
     //////////////////////////////////////////////////////////////*/
-    function test__unit__Initialization() public {
-        assertEq(nftContract.getMaxSupply(), networkConfig.args.maxSupply);
-
-        assertEq(nftContract.getBaseURI(), networkConfig.args.baseURI);
-        assertEq(nftContract.contractURI(), networkConfig.args.contractURI);
-
-        assertEq(nftContract.getMaxWalletSize(), 10);
-        assertEq(nftContract.getBatchLimit(), 10);
-
+    function test__unit__Initialization() public view {
         assertEq(nftContract.isPaused(), true);
-
-        assertEq(nftContract.supportsInterface(0x80ac58cd), true); // ERC721
-        assertEq(nftContract.supportsInterface(0x2a55205a), true); // ERC2981
-
-        vm.expectRevert(IERC721A.URIQueryForNonexistentToken.selector);
-        nftContract.tokenURI(1);
     }
 
     /*//////////////////////////////////////////////////////////////
                                TEST PAUSE
     //////////////////////////////////////////////////////////////*/
-    function test__NFTPausable__UnPause() public {
+    function test__ERC721APausable__UnPause() public {
         address owner = nftContract.owner();
 
         vm.prank(owner);
@@ -90,7 +76,7 @@ contract NFTPausableUnitTest is Test {
         assertEq(nftContract.isPaused(), false);
     }
 
-    function test__NFTPausable__Pause() public {
+    function test__ERC721APausable__Pause() public {
         address owner = nftContract.owner();
 
         vm.prank(owner);
@@ -102,7 +88,7 @@ contract NFTPausableUnitTest is Test {
         assertEq(nftContract.isPaused(), true);
     }
 
-    function test__NFTPausable__EmitEvent__Pause() public {
+    function test__ERC721APausable__EmitEvent__Pause() public {
         address owner = nftContract.owner();
 
         vm.expectEmit(true, true, true, true);
@@ -112,7 +98,7 @@ contract NFTPausableUnitTest is Test {
         nftContract.unpause();
     }
 
-    function test__NFTPausable__EmitEvent__Unpause() public {
+    function test__ERC721APausable__EmitEvent__Unpause() public {
         address owner = nftContract.owner();
         vm.prank(owner);
         nftContract.unpause();
@@ -124,7 +110,7 @@ contract NFTPausableUnitTest is Test {
         nftContract.pause();
     }
 
-    function test__NFTPausable__RevertsWhen__NotOwnerPauses() public {
+    function test__ERC721APausable__RevertsWhen__NotOwnerPauses() public {
         address owner = nftContract.owner();
 
         vm.prank(owner);
@@ -135,7 +121,7 @@ contract NFTPausableUnitTest is Test {
         nftContract.pause();
     }
 
-    function test__NFTPausable__RevertsWhen__PauseAlreadyPaused() public {
+    function test__ERC721APausable__RevertsWhen__PauseAlreadyPaused() public {
         address owner = nftContract.owner();
 
         vm.expectRevert(Pausable.Pausable_ContractIsPaused.selector);
@@ -144,7 +130,7 @@ contract NFTPausableUnitTest is Test {
         nftContract.pause();
     }
 
-    function test__NFTPausable__RevertsWhen__UnpauseAlreadyUnpaused() public {
+    function test__ERC721APausable__RevertsWhen__UnpauseAlreadyUnpaused() public {
         address owner = nftContract.owner();
 
         vm.prank(owner);
@@ -162,7 +148,7 @@ contract NFTPausableUnitTest is Test {
 
     /// SUCCESS
     //////////////////////////////////////////////////////////////*/
-    function test__NFTPausable__Mint(uint256 quantity) public unpaused {
+    function test__ERC721APausable__Mint(uint256 quantity) public unpaused {
         quantity = bound(quantity, 1, nftContract.getBatchLimit());
 
         vm.prank(USER);
@@ -173,7 +159,7 @@ contract NFTPausableUnitTest is Test {
 
     /// REVERTS
     //////////////////////////////////////////////////////////////*/
-    function test__NFTPausable__RevertWhen__MintPaused() public {
+    function test__ERC721APausable__RevertWhen__MintPaused() public {
         vm.expectRevert(Pausable.Pausable_ContractIsPaused.selector);
         vm.prank(USER);
         nftContract.mint(1);

@@ -2,32 +2,22 @@
 pragma solidity 0.8.20;
 
 import {PseudoRandomized} from "src/extensions/PseudoRandomized.sol";
-import {NFTBasic, ERC721A} from "src/NFTBasic.sol";
+import {ERC721ACore, ERC721A} from "src/ERC721ACore.sol";
 
 /// @title NFTPseudoRandomized
 /// @author Nadina Oates
 /// @notice Contract implementing ERC721A standard with pseudorandomized token uris
 
-contract NFTPseudoRandomized is NFTBasic, PseudoRandomized {
+contract ERC721APseudoRandomized is ERC721ACore, PseudoRandomized {
     /*//////////////////////////////////////////////////////////////
                                FUNCTIONS
     //////////////////////////////////////////////////////////////*/
 
     /// @notice Constructor
-    /// @param name_ collection name
-    /// @param symbol_ nft symbol
-    /// @param baseURI_ base uri
-    /// @param contractURI_ contract uri
-    /// @param owner_ contract owner
-    /// @param maxSupply_ maximum nfts mintable
-    constructor(
-        string memory name_,
-        string memory symbol_,
-        string memory baseURI_,
-        string memory contractURI_,
-        address owner_,
-        uint256 maxSupply_
-    ) NFTBasic(name_, symbol_, baseURI_, contractURI_, owner_, maxSupply_) PseudoRandomized(maxSupply_) {}
+    constructor(ERC721ACore.CoreConfig memory coreConfig)
+        ERC721ACore(coreConfig)
+        PseudoRandomized(coreConfig.maxSupply)
+    {}
 
     /*//////////////////////////////////////////////////////////////
                            EXTERNAL FUNCTIONS
@@ -49,7 +39,7 @@ contract NFTPseudoRandomized is NFTBasic, PseudoRandomized {
         public
         view
         virtual
-        override(NFTBasic, PseudoRandomized)
+        override(ERC721ACore, PseudoRandomized)
         returns (string memory)
     {
         return PseudoRandomized.tokenURI(tokenId);
@@ -58,8 +48,8 @@ contract NFTPseudoRandomized is NFTBasic, PseudoRandomized {
     /// @notice checks for supported interface
     /// @dev function override required by ERC721A
     /// @param interfaceId interfaceId to be checked
-    function supportsInterface(bytes4 interfaceId) public view override(ERC721A, NFTBasic) returns (bool) {
-        return NFTBasic.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId) public view override(ERC721A, ERC721ACore) returns (bool) {
+        return ERC721ACore.supportsInterface(interfaceId);
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -68,13 +58,13 @@ contract NFTPseudoRandomized is NFTBasic, PseudoRandomized {
 
     /// @notice Retrieves base uri
     /// @dev override required by ERC721A
-    function _baseURI() internal view override(ERC721A, NFTBasic) returns (string memory) {
-        return NFTBasic._baseURI();
+    function _baseURI() internal view override(ERC721A, ERC721ACore) returns (string memory) {
+        return ERC721ACore._baseURI();
     }
 
     /// @notice sets first tokenId to 1
     /// @dev override required by ERC721A
-    function _startTokenId() internal view override(NFTBasic, PseudoRandomized) returns (uint256) {
+    function _startTokenId() internal view override(ERC721ACore, PseudoRandomized) returns (uint256) {
         return PseudoRandomized._startTokenId();
     }
 }

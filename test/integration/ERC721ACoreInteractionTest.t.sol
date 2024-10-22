@@ -5,23 +5,23 @@ pragma solidity ^0.8.20;
 import {Test, console} from "forge-std/Test.sol";
 import {ERC20Mock} from "@openzeppelin/contracts/mocks/token/ERC20Mock.sol";
 
-import {NFTContract} from "src/NFTContract.sol";
+import {ERC721ACore} from "src/ERC721ACore.sol";
 import {HelperConfig} from "script/helpers/HelperConfig.s.sol";
-import {DeployNFTContract} from "script/deployment/DeployNFTContract.s.sol";
-import {MintNft, BatchMint} from "script/interactions/NFTContractInteractions.s.sol";
+import {DeployERC721ACore} from "script/deployment/DeployERC721ACore.s.sol";
+import {MintNft, BatchMint, TransferNft, ApproveNft, BurnNft} from "script/interactions/ERC721ACoreInteractions.s.sol";
 
-contract NFTContractInteractionsTest is Test {
+contract ERC721ACoreInteractionTest is Test {
     /*//////////////////////////////////////////////////////////////
                              CONFIGURATION
     //////////////////////////////////////////////////////////////*/
-    DeployNFTContract deployment;
+    DeployERC721ACore deployment;
     HelperConfig helperConfig;
     HelperConfig.NetworkConfig networkConfig;
 
     /*//////////////////////////////////////////////////////////////
                                CONTRACTS
     //////////////////////////////////////////////////////////////*/
-    NFTContract nftContract;
+    ERC721ACore nftContract;
     ERC20Mock token;
 
     /*//////////////////////////////////////////////////////////////
@@ -41,42 +41,21 @@ contract NFTContractInteractionsTest is Test {
         _;
     }
 
-    modifier funded(address account) {
-        // fund user with eth
-        deal(account, 1000 ether);
-
-        // fund user with tokens
-        token.mint(account, STARTING_BALANCE);
-
-        // approve Tokens
-        vm.prank(account);
-        token.approve(address(nftContract), STARTING_BALANCE);
-        _;
-    }
-
-    modifier unpaused() {
-        vm.startPrank(nftContract.owner());
-        nftContract.unpause();
-        vm.stopPrank();
-        _;
-    }
-
     /*//////////////////////////////////////////////////////////////
                                  SETUP
     //////////////////////////////////////////////////////////////*/
     function setUp() external {
-        deployment = new DeployNFTContract();
+        deployment = new DeployERC721ACore();
         (nftContract, helperConfig) = deployment.run();
         contractOwner = nftContract.owner();
 
         networkConfig = helperConfig.getActiveNetworkConfigStruct();
-        token = ERC20Mock(nftContract.getFeeToken());
     }
 
     /*//////////////////////////////////////////////////////////////
                                TEST MINT
     //////////////////////////////////////////////////////////////*/
-    function test__NFTContractInteraction__SingleMint() public funded(msg.sender) unpaused {
+    function test__ERC721ACoreInteraction__SingleMint() public {
         MintNft mintNft = new MintNft();
         mintNft.mintNft(address(nftContract));
         assertEq(nftContract.balanceOf(msg.sender), 1);
@@ -85,9 +64,50 @@ contract NFTContractInteractionsTest is Test {
     /*//////////////////////////////////////////////////////////////
                             TEST BATCH MINT
     //////////////////////////////////////////////////////////////*/
-    function test__NFTContractInteraction__BatchMint() public funded(msg.sender) unpaused {
+    function test__ERC721ACoreInteraction__BatchMint() public {
         BatchMint batchMint = new BatchMint();
         batchMint.batchMint(address(nftContract));
         assertEq(nftContract.balanceOf(msg.sender), nftContract.getBatchLimit());
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                             TEST TRANSFER
+    //////////////////////////////////////////////////////////////*/
+    function test__ERC721ACoreInteraction__TransferNft() public {
+        MintNft mintNft = new MintNft();
+        mintNft.mintNft(address(nftContract));
+        assert(nftContract.balanceOf(msg.sender) == 1);
+
+        TransferNft transferNft = new TransferNft();
+        transferNft.transferNft(address(nftContract));
+        assertEq(nftContract.balanceOf(msg.sender), 0);
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                              TEST APPROVE
+    //////////////////////////////////////////////////////////////*/
+    function test__ERC721ACoreInteraction__ApproveNft() public {
+        MintNft mintNft = new MintNft();
+        mintNft.mintNft(address(nftContract));
+        assertEq(nftContract.balanceOf(msg.sender), 1);
+
+        ApproveNft approveNft = new ApproveNft();
+        approveNft.approveNft(address(nftContract));
+
+        assertEq(nftContract.getApproved(1), approveNft.SENDER());
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                               TEST BURN
+    //////////////////////////////////////////////////////////////*/
+    function test__ERC721ACoreInteraction__BurnNft() public {
+        MintNft mintNft = new MintNft();
+        mintNft.mintNft(address(nftContract));
+        assertEq(nftContract.balanceOf(msg.sender), 1);
+
+        BurnNft burnNft = new BurnNft();
+        burnNft.burnNft(address(nftContract));
+
+        assertEq(nftContract.balanceOf(msg.sender), 0);
     }
 }
