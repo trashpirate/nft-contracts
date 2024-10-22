@@ -20,6 +20,7 @@ abstract contract Whitelist {
                                  EVENTS
     //////////////////////////////////////////////////////////////*/
     event ClaimStatusSet(address indexed account, bool indexed claimed);
+    event MerkleRootSet(address indexed account, bytes32 indexed merkleRoot);
 
     /*//////////////////////////////////////////////////////////////
                                  ERRORS
@@ -62,6 +63,7 @@ abstract contract Whitelist {
     /// @param merkleRoot New merkle root
     function _setMerkleRoot(bytes32 merkleRoot) internal {
         s_merkleRoot = merkleRoot;
+        emit MerkleRootSet(msg.sender, merkleRoot);
     }
 
     /// @notice Verifies the claimer's address

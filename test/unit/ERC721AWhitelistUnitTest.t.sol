@@ -46,6 +46,7 @@ contract ERC721AWhitelistUnitTest is Test {
     //////////////////////////////////////////////////////////////*/
 
     event ClaimStatusSet(address indexed account, bool indexed claimed);
+    event MerkleRootSet(address indexed account, bytes32 indexed merkleRoot);
 
     /*//////////////////////////////////////////////////////////////
                                  MODIFIERS
@@ -89,6 +90,16 @@ contract ERC721AWhitelistUnitTest is Test {
         nftContract.setMerkleRoot(NEW_MERKLE_ROOT);
 
         assertEq(nftContract.getMerkleRoot(), NEW_MERKLE_ROOT);
+    }
+
+    function test__ERC721AWhitelist__EmitEvent__SetMerkleRoot() public {
+        address owner = nftContract.owner();
+
+        vm.expectEmit(true, true, true, true);
+        emit MerkleRootSet(owner, NEW_MERKLE_ROOT);
+
+        vm.prank(owner);
+        nftContract.setMerkleRoot(NEW_MERKLE_ROOT);
     }
 
     /*//////////////////////////////////////////////////////////////
