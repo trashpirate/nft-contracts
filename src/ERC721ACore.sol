@@ -54,7 +54,6 @@ contract ERC721ACore is ERC721A, ERC2981, ERC721ABurnable, Ownable {
     /*//////////////////////////////////////////////////////////////
                                  ERRORS
     //////////////////////////////////////////////////////////////*/
-    error ERC721ACore_InsufficientMintQuantity();
     error ERC721ACore_ExceedsMaxSupply();
     error ERC721ACore_ExceedsMaxPerWallet();
     error ERC721ACore_ExceedsBatchLimit();
@@ -68,7 +67,6 @@ contract ERC721ACore is ERC721A, ERC2981, ERC721ABurnable, Ownable {
     //////////////////////////////////////////////////////////////*/
 
     modifier validQuantity(uint256 quantity) {
-        if (quantity == 0) revert ERC721ACore_InsufficientMintQuantity();
         if (quantity > s_batchLimit) revert ERC721ACore_ExceedsBatchLimit();
         if (s_maxWalletSize > 0 && quantity > s_maxWalletSize) revert ERC721ACore_ExceedsMaxPerWallet();
         if (totalSupply() + quantity > i_maxSupply) {
