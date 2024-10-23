@@ -7,7 +7,7 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC721A} from "@erc721a/contracts/IERC721A.sol";
 
 import {DeployERC721APausable} from "script/deployment/DeployERC721APausable.s.sol";
-import {ERC721APausable} from "src/examples/ERC721APausable.sol";
+import {ERC721APausable} from "src/test/ERC721APausable.sol";
 import {Pausable} from "src/utils/Pausable.sol";
 import {HelperConfig} from "script/helpers/HelperConfig.s.sol";
 

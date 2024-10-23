@@ -5,7 +5,7 @@ pragma solidity ^0.8.20;
 import {Test, console} from "forge-std/Test.sol";
 
 import {DeployERC721AWhitelist} from "script/deployment/DeployERC721AWhitelist.s.sol";
-import {ERC721AWhitelist} from "src/examples/ERC721AWhitelist.sol";
+import {ERC721AWhitelist} from "src/test/ERC721AWhitelist.sol";
 import {Whitelist} from "src/extensions/Whitelist.sol";
 import {HelperConfig} from "script/helpers/HelperConfig.s.sol";
 

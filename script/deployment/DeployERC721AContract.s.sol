@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import {Script, console} from "forge-std/Script.sol";
-import {ERC721AContract} from "src/examples/ERC721AContract.sol";
+import {ERC721AContract} from "src/test/ERC721AContract.sol";
 import {HelperConfig} from "script/helpers/HelperConfig.s.sol";
 
 contract DeployERC721AContract is Script {

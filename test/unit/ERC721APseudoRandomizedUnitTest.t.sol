@@ -9,7 +9,7 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 import {StringToNumber} from "test/utils/Utils.sol";
 import {DeployERC721APseudoRandomized} from "script/deployment/DeployERC721APseudoRandomized.s.sol";
-import {ERC721APseudoRandomized, ERC721ACore} from "src/examples/ERC721APseudoRandomized.sol";
+import {ERC721APseudoRandomized, ERC721ACore} from "src/test/ERC721APseudoRandomized.sol";
 import {HelperConfig} from "script/helpers/HelperConfig.s.sol";
 import {TestHelper} from "test/utils/TestHelper.sol";
 

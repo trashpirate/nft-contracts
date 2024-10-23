@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 import {Script, console} from "forge-std/Script.sol";
 import {DevOpsTools} from "foundry-devops/src/DevOpsTools.sol";
 
-import {ERC721AContract} from "src/examples/ERC721AContract.sol";
+import {ERC721AContract} from "src/test/ERC721AContract.sol";
 
 contract MintNft is Script {
     function mintNft(address recentContractAddress) public {

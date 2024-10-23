@@ -10,7 +10,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC721A} from "@erc721a/contracts/IERC721A.sol";
 
 import {DeployERC721AFeeHandler} from "script/deployment/DeployERC721AFeeHandler.s.sol";
-import {ERC721AFeeHandler} from "src/examples/ERC721AFeeHandler.sol";
+import {ERC721AFeeHandler} from "src/test/ERC721AFeeHandler.sol";
 import {FeeHandler} from "src/extensions/FeeHandler.sol";
 import {HelperConfig} from "script/helpers/HelperConfig.s.sol";
 

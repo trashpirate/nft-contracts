@@ -5,7 +5,7 @@ pragma solidity ^0.8.20;
 import {Test, console} from "forge-std/Test.sol";
 import {ERC20Mock} from "@openzeppelin/contracts/mocks/token/ERC20Mock.sol";
 
-import {ERC721ABasic} from "src/examples/ERC721ABasic.sol";
+import {ERC721ABasic} from "src/test/ERC721ABasic.sol";
 import {HelperConfig} from "script/helpers/HelperConfig.s.sol";
 import {DeployERC721ABasic} from "script/deployment/DeployERC721ABasic.s.sol";
 import {

@@ -5,7 +5,7 @@ pragma solidity ^0.8.20;
 import {Test, console} from "forge-std/Test.sol";
 import {ERC20Mock} from "@openzeppelin/contracts/mocks/token/ERC20Mock.sol";
 
-import {ERC721AContract} from "src/examples/ERC721AContract.sol";
+import {ERC721AContract} from "src/test/ERC721AContract.sol";
 import {HelperConfig} from "script/helpers/HelperConfig.s.sol";
 import {DeployERC721AContract} from "script/deployment/DeployERC721AContract.s.sol";
 import {MintNft, BatchMint} from "script/interactions/ERC721AContractInteractions.s.sol";

@@ -10,7 +10,7 @@ import {ERC20Mock} from "@openzeppelin/contracts/mocks/token/ERC20Mock.sol";
 import {ERC721A__IERC721Receiver} from "@erc721a/contracts/ERC721A.sol";
 
 import {DeployERC721ABasic} from "script/deployment/DeployERC721ABasic.s.sol";
-import {ERC721ABasic, ERC721ACore} from "src/examples/ERC721ABasic.sol";
+import {ERC721ABasic, ERC721ACore} from "src/test/ERC721ABasic.sol";
 import {HelperConfig} from "script/helpers/HelperConfig.s.sol";
 import {TestHelper} from "test/utils/TestHelper.sol";
 
